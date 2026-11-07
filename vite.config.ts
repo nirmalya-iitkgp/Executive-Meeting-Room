@@ -7,16 +7,23 @@ const executiveModelPlugin: Plugin = {
   name: 'executive-glb-models',
   enforce: 'pre',
   transform(code, id) {
-    if (!id.endsWith('/src/main.ts')) return;
+    // Vite may append query parameters (for example, ?import or HTML proxy flags).
+    // Normalize the module ID before matching the source file.
+    const sourcePath = id.split('?')[0].replaceAll('\\', '/');
+    if (!sourcePath.endsWith('/src/main.ts')) return;
 
     const start = code.indexOf('// Load 8 executives with GLTF or procedural fallback');
     const end = code.indexOf('// 6. UI Controls Binding', start);
-    if (start === -1 || end === -1) return;
+    if (start === -1 || end === -1) {
+      this.warn(`Could not find executive model loader section in ${sourcePath}; GLB loader patch was not applied.`);
+      return;
+    }
 
     const replacement = `// Load the GLB assets from builds/ and use procedural avatars if a model fails.
 const dracoLoader = new DRACOLoader();
 dracoLoader.setDecoderPath('https://www.gstatic.com/draco/v1/decoders/');
 gltfLoader.setDRACOLoader(dracoLoader);
+console.info('Draco decoder configured for executive GLB models');
 
 const MODEL_URLS: Record<number, string> = {
   1: new URL('../builds/blue_blazer_executive.glb', import.meta.url).href,
