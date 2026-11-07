@@ -1,0 +1,6 @@
+{
+  "name": "Executive Steering Committee Boardroom Portal",
+  "description": "Interactive 3D Executive Steering Committee Boardroom portal built with Three.js featuring 8 dynamic executive portals with spatial navigation and PBR rendering.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

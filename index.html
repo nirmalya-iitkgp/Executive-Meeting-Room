@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Executive Steering Committee Portal</title>
+  <meta name="description" content="Interactive 3D Executive Steering Committee Boardroom portal built with Three.js featuring 8 dynamic executive portals with spatial navigation and PBR rendering." />
+  <meta property="og:title" content="Executive Steering Committee Portal" />
+  <meta property="og:description" content="Interactive 3D Executive Steering Committee Boardroom portal built with Three.js featuring 8 dynamic executive portals with spatial navigation and PBR rendering." />
+  <meta property="og:type" content="website" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="icon" type="image/png" href="/favicon.png" />
+
+  <style>
+    :root {
+      --bg-dark: #0b0f19;
+      --card-bg: rgba(15, 23, 42, 0.82);
+      --card-border: rgba(255, 255, 255, 0.12);
+      --card-border-active: rgba(56, 189, 248, 0.5);
+      --accent-gold: #f59e0b;
+      --accent-cyan: #38bdf8;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background-color: var(--bg-dark);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      color: var(--text-main);
+      user-select: none;
+    }
+
+    #webgl-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 1;
+      cursor: grab;
+    }
+
+    #webgl-container:active {
+      cursor: grabbing;
+    }
+
+    /* UI Header Overlay */
+    .header-overlay {
+      position: absolute;
+      top: 24px;
+      left: 28px;
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      pointer-events: auto;
+    }
+
+    .brand-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(15, 23, 42, 0.75);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 6px;
+      padding: 4px 10px;
+      width: fit-content;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: #10b981;
+      box-shadow: 0 0 8px #10b981;
+    }
+
+    .brand-tag {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--accent-cyan);
+      font-weight: 700;
+    }
+
+    .portal-title {
+      font-size: 24px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: #ffffff;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.8);
+    }
+
+    .portal-subtitle {
+      font-size: 13px;
+      color: var(--text-muted);
+      letter-spacing: 0.01em;
+    }
+
+    /* Top Right Controls */
+    .top-controls {
+      position: absolute;
+      top: 24px;
+      right: 28px;
+      z-index: 10;
+      display: flex;
+      gap: 10px;
+    }
+
+    .hud-btn {
+      background: rgba(15, 23, 42, 0.75);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: var(--text-main);
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+    }
+
+    .hud-btn:hover {
+      background: rgba(30, 41, 59, 0.9);
+      border-color: rgba(255, 255, 255, 0.3);
+      transform: translateY(-1px);
+    }
+
+    /* Floating Glassmorphism Bottom Dock */
+    .dock-container {
+      position: absolute;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 10;
+      width: min(880px, calc(100vw - 32px));
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.35s ease;
+    }
+
+    .dock-container.collapsed {
+      transform: translate(-50%, calc(100% - 32px));
+    }
+
+    .dock-toggle-btn {
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-bottom: none;
+      color: var(--text-muted);
+      padding: 4px 16px;
+      border-radius: 8px 8px 0 0;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      letter-spacing: 0.04em;
+      transition: color 0.2s;
+    }
+
+    .dock-toggle-btn:hover {
+      color: #ffffff;
+    }
+
+    .dock-card {
+      width: 100%;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 16px 20px;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6);
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    /* Quick Member Pills */
+    .member-pills-row {
+      display: grid;
+      grid-template-columns: repeat(8, 1fr);
+      gap: 6px;
+      width: 100%;
+    }
+
+    .pill-btn {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 8px;
+      padding: 6px 4px;
+      color: var(--text-muted);
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+      font-size: 11px;
+      font-weight: 600;
+      transition: all 0.2s ease;
+    }
+
+    .pill-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: #ffffff;
+    }
+
+    .pill-btn.active {
+      background: rgba(56, 189, 248, 0.15);
+      border-color: var(--card-border-active);
+      color: var(--accent-cyan);
+    }
+
+    .pill-number {
+      font-size: 10px;
+      opacity: 0.65;
+    }
+
+    .pill-role {
+      font-size: 10px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 100%;
+    }
+
+    /* Active Details Banner */
+    .active-exec-content {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      padding-top: 12px;
+    }
+
+    .exec-info-left {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .exec-avatar-badge {
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--accent-cyan);
+      flex-shrink: 0;
+    }
+
+    .exec-meta-title-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .exec-role-name {
+      font-size: 17px;
+      font-weight: 700;
+      color: #ffffff;
+    }
+
+    .exec-status-chip {
+      font-size: 10px;
+      font-weight: 600;
+      padding: 2px 7px;
+      border-radius: 4px;
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+
+    .exec-status-chip.standing {
+      background: rgba(234, 179, 8, 0.15);
+      color: var(--accent-gold);
+      border: 1px solid rgba(234, 179, 8, 0.3);
+    }
+
+    .exec-subtitle-text {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .launch-action-btn {
+      background: linear-gradient(135deg, #0284c7 0%, #2563eb 100%);
+      border: none;
+      color: #ffffff;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 4px 14px rgba(2, 132, 199, 0.35);
+      transition: all 0.2s ease;
+      flex-shrink: 0;
+    }
+
+    .launch-action-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(2, 132, 199, 0.5);
+    }
+
+    /* Floating Hover Tooltip */
+    #hover-tooltip {
+      position: absolute;
+      z-index: 20;
+      pointer-events: none;
+      background: rgba(11, 15, 25, 0.92);
+      border: 1px solid rgba(56, 189, 248, 0.4);
+      border-radius: 8px;
+      padding: 8px 12px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.7);
+      display: none;
+      transform: translate(-50%, -130%);
+      white-space: nowrap;
+    }
+
+    #hover-tooltip .tip-role {
+      font-size: 13px;
+      font-weight: 700;
+      color: #ffffff;
+    }
+
+    #hover-tooltip .tip-sub {
+      font-size: 11px;
+      color: var(--accent-cyan);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      margin-top: 2px;
+    }
+
+    /* Loading Overlay */
+    #loading-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: #0b0f19;
+      z-index: 100;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.5s ease;
+    }
+
+    .loader-spinner {
+      width: 48px;
+      height: 48px;
+      border: 3px solid rgba(255, 255, 255, 0.1);
+      border-top-color: var(--accent-cyan);
+      border-radius: 50%;
+      animation: spin 0.9s linear infinite;
+      margin-bottom: 20px;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .loader-title {
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: #ffffff;
+    }
+
+    .loader-sub {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 6px;
+    }
+
+    @media (max-width: 768px) {
+      .header-overlay {
+        top: 16px;
+        left: 16px;
+      }
+      .portal-title {
+        font-size: 18px;
+      }
+      .portal-subtitle {
+        display: none;
+      }
+      .top-controls {
+        top: 16px;
+        right: 16px;
+      }
+      .dock-container {
+        bottom: 12px;
+        width: calc(100vw - 24px);
+      }
+      .member-pills-row {
+        grid-template-columns: repeat(4, 1fr);
+      }
+      .active-exec-content {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .launch-action-btn {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- 3D WebGL Canvas Container -->
+  <div id="webgl-container"></div>
+
+  <!-- Loading Screen Overlay -->
+  <div id="loading-overlay">
+    <div class="loader-spinner"></div>
+    <div class="loader-title">Executive Steering Committee</div>
+    <div class="loader-sub">Initializing 3D Boardroom Environment & PBR Shaders...</div>
+  </div>
+
+  <!-- Top-Left Corporate Header -->
+  <header class="header-overlay">
+    <div class="brand-badge">
+      <span class="status-dot"></span>
+      <span class="brand-tag">Global Executive Board</span>
+    </div>
+    <h1 class="portal-title">Executive Steering Committee Portal</h1>
+    <p class="portal-subtitle">Interactive 3D Executive Command Chamber & Decision Systems</p>
+  </header>
+
+  <!-- Top-Right Actions -->
+  <aside class="top-controls">
+    <button id="reset-cam-btn" class="hud-btn" title="Reset Camera View">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+      Reset Camera
+    </button>
+  </aside>
+
+  <!-- Interactive Floating Tooltip -->
+  <div id="hover-tooltip">
+    <div class="tip-role" id="tip-role">CTO Digital Transformation</div>
+    <div class="tip-sub">
+      Click to launch application
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M7 17l9.2-9.2M17 17V8H8"/></svg>
+    </div>
+  </div>
+
+  <!-- Collapsible Glassmorphism Bottom Control Dock -->
+  <section class="dock-container" id="dock-container">
+    <button class="dock-toggle-btn" id="dock-toggle-btn">▾ Collapse HUD</button>
+    <div class="dock-card">
+      <!-- 8 Committee Node Selectors -->
+      <nav class="member-pills-row" id="pills-row" aria-label="Executive Committee Navigation">
+        <!-- Rendered dynamically -->
+      </nav>
+
+      <!-- Active Committee Member Info -->
+      <div class="active-exec-content" id="active-exec-content">
+        <div class="exec-info-left">
+          <div class="exec-avatar-badge" id="exec-badge">DT</div>
+          <div>
+            <div class="exec-meta-title-row">
+              <span class="exec-role-name" id="exec-title">CTO Digital Transformation</span>
+              <span class="exec-status-chip standing" id="exec-status-chip">Standing Presentation</span>
+            </div>
+            <div class="exec-subtitle-text" id="exec-subtitle">Click to launch application ↗</div>
+          </div>
+        </div>
+        <button class="launch-action-btn" id="launch-btn">
+          Launch Application
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Modular Three.js Boardroom Application -->
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
