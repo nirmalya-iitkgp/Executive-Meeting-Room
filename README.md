@@ -12,16 +12,16 @@ The portal features 8 executive nodes arranged across an executive boardroom tab
 - **Left Side (Seated Executives 1–4)**: Focus on strategic deliberation and analytics.
 - **Right Side (Standing Presentations 5–8)**: Dynamic executive briefing and committee command.
 
-| # | Executive Role | Department / Office | Posture | Destination Portal URL |
+| # | Position | Department / Office | Posture | Destination Portal URL |
 |---|---|---|---|---|
-| **1** | **Brand Studio** | Chief Marketing Officer (CMO) | Seated | `https://nirmalya-iitkgp.github.io/Brand-Studio/` |
-| **2** | **A/B Testing Suite** | Head of Growth & Experimentation | Seated | `https://nirmalya-iitkgp.github.io/A-B-testing-suite/` |
-| **3** | **CXO Planning Portal** | Chief Strategy Officer (CSO) | Seated | `https://nirmalya-iitkgp.github.io/CXO-Planning-Portal/` |
-| **4** | **Price Pulse** | Chief Commercial Officer (CCO) | Seated | `https://nirmalya-iitkgp.github.io/Price-Pulse/` |
-| **5** | **Meridian CEO Suite** | Chief Executive Officer (CEO) | Standing | `https://nirmalya-iitkgp.github.io/Meridian-CEO-Decision-Suite/` |
-| **6** | **CFO Capital Allocation** | Chief Financial Officer (CFO) | Standing | `https://nirmalya-iitkgp.github.io/CFO-Capital-allocation/` |
-| **7** | **Carbon Management** | Chief Sustainability Officer (CSO) | Standing | `https://nirmalya-iitkgp.github.io/Carbon-Management/` |
-| **8** | **CTO Digital Transformation** | Chief Technology Officer (CTO) | Standing | `https://nirmalya-iitkgp.github.io/CTO-Digital-Transformation/` |
+| **1** | **CTO** | Chief Technology Officer | Seated | `https://nirmalya-iitkgp.github.io/CTO-Digital-Transformation/` |
+| **2** | **CFO** | Chief Financial Officer | Seated | `https://nirmalya-iitkgp.github.io/CFO-Capital-allocation/` |
+| **3** | **CEO** | Chief Executive Officer | Seated | `https://nirmalya-iitkgp.github.io/Meridian-CEO-Decision-Suite/` |
+| **4** | **CMO** | Chief Marketing Officer | Seated | `https://nirmalya-iitkgp.github.io/Brand-Studio/` |
+| **5** | **CPO** | Chief Product Officer | Standing | `https://nirmalya-iitkgp.github.io/A-B-testing-suite/` |
+| **6** | **CSO** | Chief Strategy Officer | Standing | `https://nirmalya-iitkgp.github.io/CXO-Planning-Portal/` |
+| **7** | **CCO** | Chief Commercial Officer | Standing | `https://nirmalya-iitkgp.github.io/Price-Pulse/` |
+| **8** | **CSO-ESG** | Chief Sustainability Officer | Standing | `https://nirmalya-iitkgp.github.io/Carbon-Management/` |
 
 ---
 
@@ -32,10 +32,17 @@ The portal features 8 executive nodes arranged across an executive boardroom tab
 - **Balanced 3-Point Studio Rig**: Warm key directional spotlight with `PCFSoftShadowMap` (2048x2048 shadow frustum), cool `HemisphereLight` fill, and an overhead point light generating specular highlights on polished surfaces.
 - **Atmospheric Depth**: Deep dark corporate boardroom aesthetic (`#0b0f19`) paired with subtle exponential fog (`FogExp2`).
 
-### 2. Room Architecture & Executive Table
-- **Executive Boardroom Table**: Sleek elongated boardroom table stretching along the X axis, crafted in polished obsidian marble with chamfered brass trim (`metalness: 0.9`, `roughness: 0.22`), cantilever pedestal legs, and recessed LED underglow.
-- **Polished Ground Plane**: Reflective floor with contact shadow grounding under the table and chairs to prevent floating artifacts.
-- **Architectural Backdrop**: Panoramic floor-to-ceiling glass wall overlooking a nighttime metropolitan skyline with architectural pillar accents and suspended linear boardroom luminaire.
+### 2. Room Architecture, Luxury Wallpaper & Executive Furnishings
+- **Stealth Luxury Black Table**: Sleek elongated boardroom table crafted in polished obsidian black (`roughness: 0.16`, `metalness: 0.12`), anodized dark titanium trim (`#18181b`), and matte black cantilever pedestal legs. Repositioned forward along the Z axis (`z = 1.05`) to provide 1.0m clearance and ensure full visibility of all members' bodies and chairs.
+- **Architectural Geometric Executive Wallpaper**: Procedurally generated 1024x1024 acoustic woven luxury wall covering featuring micro-weave texture, deep charcoal-navy hue, and metallic brass/titanium lattice pinstripes with embossed bump mapping.
+- **Ultra-Wide Executive Video Wall**: Seamless 9.6m x 3.4m curved command display mounted flush on the feature wall, displaying global enterprise telemetry, real-time node links (New York, London, Zurich, Singapore, Tokyo, Bengaluru), and key financial gauges.
+- **Filled Chamber Appointments**:
+  - Inset geometric dark woven executive area rug with metallic trim framing the meeting zone.
+  - Fluted acoustic vertical timber slat wings with warm cove LED uplighting.
+  - Architectural side glass curtain walls with dark steel mullions overlooking the night skyline.
+  - Floating side credenzas with modern abstract bronze sculptures and warm table lamps.
+  - Potted architectural plants (broadleaf ficus / fiddle-leaf fig) in luxury fluted ceramic planters with brass rims.
+  - Individual executive leather desk blotters, crystal water tumblers, and conference telepresence mic discs at all 8 stations.
 
 ### 3. GLTFLoader & Procedural Fallback Avatars
 - Attempts to load 8 separate executive `.glb` models (`executive1.glb` to `executive8.glb`).

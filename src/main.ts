@@ -3,6 +3,7 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
 import { EXECUTIVE_MEMBERS, safeOpenPortal, type ExecutiveMember } from './executiveData.ts';
+import { buildEnhancedRoom } from './roomDecor.ts';
 
 // 1. Hardware / Software WebGL Detection
 const isSoftwareGl = (() => {
@@ -83,7 +84,7 @@ scene.add(keySpotlight);
 
 // Overhead point light for realistic specular highlights on polished marble/floor
 const overheadPointLight = new THREE.PointLight(0x38bdf8, 1.4, 16, 1.2);
-overheadPointLight.position.set(0, 3.4, 0);
+overheadPointLight.position.set(0, 3.8, 1.05);
 scene.add(overheadPointLight);
 
 const warmFillLight = new THREE.DirectionalLight(0xfef08a, 0.7);
@@ -94,9 +95,9 @@ scene.add(warmFillLight);
 // Reflective floor
 const floorGeo = new THREE.PlaneGeometry(36, 36);
 const floorMat = new THREE.MeshStandardMaterial({
-  color: 0x0f172a,
-  roughness: 0.18,
-  metalness: 0.85,
+  color: 0x090d16,
+  roughness: 0.16,
+  metalness: 0.88,
 });
 const floor = new THREE.Mesh(floorGeo, floorMat);
 floor.rotation.x = -Math.PI / 2;
@@ -117,19 +118,20 @@ floorGrid.rotation.x = -Math.PI / 2;
 floorGrid.position.set(0, 0.005, -0.5);
 scene.add(floorGrid);
 
-// Executive Boardroom Table: Sleek elongated pill table stretching across X axis
+// Executive Boardroom Table: Sleek elongated black table brought forward so members' full bodies are visible
 const tableGroup = new THREE.Group();
 const tableWidth = 13.8;
-const tableDepth = 2.3;
-const tableHeight = 1.05;
-const tableThickness = 0.12;
+const tableDepth = 1.6;
+const tableHeight = 0.86;
+const tableThickness = 0.08;
+const tableZ = 1.05; // Brought forward in +Z so executive members behind it are fully visible
 
-// Table Top: Polished obsidian marble PBR material
+// Table Top: Deep polished obsidian black luxury material
 const tableTopGeo = new THREE.BoxGeometry(tableWidth, tableThickness, tableDepth, 32, 1, 16);
 const tableTopMat = new THREE.MeshStandardMaterial({
-  color: 0x111827,
-  roughness: 0.2,
-  metalness: 0.1,
+  color: 0x050508, // Solid luxury black
+  roughness: 0.16,
+  metalness: 0.12,
 });
 const tableTop = new THREE.Mesh(tableTopGeo, tableTopMat);
 tableTop.position.y = tableHeight;
@@ -137,33 +139,33 @@ tableTop.castShadow = !isSoftwareGl;
 tableTop.receiveShadow = !isSoftwareGl;
 tableGroup.add(tableTop);
 
-// Chamfered brass/metallic perimeter rim
-const rimGeo = new THREE.BoxGeometry(tableWidth + 0.06, 0.04, tableDepth + 0.06);
+// Anodized dark titanium rim (sleek dark profile)
+const rimGeo = new THREE.BoxGeometry(tableWidth + 0.04, 0.03, tableDepth + 0.04);
 const rimMat = new THREE.MeshStandardMaterial({
-  color: 0xd4af37,
-  metalness: 0.9,
-  roughness: 0.22,
+  color: 0x18181b, // Dark charcoal / black titanium edge
+  metalness: 0.88,
+  roughness: 0.25,
 });
 const tableRim = new THREE.Mesh(rimGeo, rimMat);
-tableRim.position.y = tableHeight + 0.04;
+tableRim.position.y = tableHeight + 0.02;
 tableGroup.add(tableRim);
 
-// Recessed underglow LED strip
-const glowGeo = new THREE.BoxGeometry(tableWidth - 0.2, 0.02, tableDepth - 0.2);
+// Recessed stealth underglow strip
+const glowGeo = new THREE.BoxGeometry(tableWidth - 0.2, 0.015, tableDepth - 0.2);
 const glowMat = new THREE.MeshBasicMaterial({
-  color: 0x0284c7,
+  color: 0x0f172a, // Deep stealth obsidian tone
   transparent: true,
-  opacity: 0.8,
+  opacity: 0.6,
 });
 const tableGlow = new THREE.Mesh(glowGeo, glowMat);
 tableGlow.position.y = tableHeight - tableThickness / 2 - 0.01;
 tableGroup.add(tableGlow);
 
-// Twin Cantilever Pedestal Table Legs
-const legGeo = new THREE.CylinderGeometry(0.55, 0.75, tableHeight, 24);
+// Twin Cantilever Pedestal Table Legs in matte black steel
+const legGeo = new THREE.CylinderGeometry(0.5, 0.68, tableHeight, 24);
 const legMat = new THREE.MeshStandardMaterial({
-  color: 0x1e293b,
-  metalness: 0.85,
+  color: 0x09090b, // Deep black steel
+  metalness: 0.9,
   roughness: 0.25,
 });
 
@@ -182,7 +184,7 @@ const contactShadowGeo = new THREE.PlaneGeometry(tableWidth + 1.2, tableDepth + 
 const contactShadowMat = new THREE.MeshBasicMaterial({
   color: 0x000000,
   transparent: true,
-  opacity: 0.45,
+  opacity: 0.5,
   depthWrite: false,
 });
 const contactShadow = new THREE.Mesh(contactShadowGeo, contactShadowMat);
@@ -190,30 +192,13 @@ contactShadow.rotation.x = -Math.PI / 2;
 contactShadow.position.y = 0.01;
 tableGroup.add(contactShadow);
 
+tableGroup.position.set(0, 0, tableZ);
 scene.add(tableGroup);
 
-// Architectural backdrop glass window & skyline glow
-const backWallGroup = new THREE.Group();
-const wallGeo = new THREE.PlaneGeometry(28, 12);
-const wallMat = new THREE.MeshStandardMaterial({
-  color: 0x070b14,
-  roughness: 0.4,
-  metalness: 0.6,
-});
-const backWall = new THREE.Mesh(wallGeo, wallMat);
-backWall.position.set(0, 5, -5.5);
-backWallGroup.add(backWall);
+// Architectural boardroom architecture: luxury geometric wallpaper, video matrix, plants, credenzas, rug & accessories
+buildEnhancedRoom(scene, isSoftwareGl, tableWidth, tableDepth, tableHeight, tableZ);
 
-for (let x = -12; x <= 12; x += 4) {
-  const pillarGeo = new THREE.BoxGeometry(0.18, 12, 0.3);
-  const pillarMat = new THREE.MeshStandardMaterial({ color: 0x1e293b, metalness: 0.8, roughness: 0.3 });
-  const pillar = new THREE.Mesh(pillarGeo, pillarMat);
-  pillar.position.set(x, 5, -5.35);
-  backWallGroup.add(pillar);
-}
-scene.add(backWallGroup);
-
-// Overhead linear luminaire fixture
+// Overhead linear luminaire fixture aligned with boardroom table
 const luminaireGeo = new THREE.BoxGeometry(tableWidth - 1.0, 0.1, 0.6);
 const luminaireMat = new THREE.MeshStandardMaterial({
   color: 0x0f172a,
@@ -221,14 +206,14 @@ const luminaireMat = new THREE.MeshStandardMaterial({
   roughness: 0.2,
 });
 const luminaire = new THREE.Mesh(luminaireGeo, luminaireMat);
-luminaire.position.set(0, 4.2, 0);
+luminaire.position.set(0, 4.3, tableZ);
 scene.add(luminaire);
 
 const lightStripGeo = new THREE.PlaneGeometry(tableWidth - 1.2, 0.45);
 const lightStripMat = new THREE.MeshBasicMaterial({ color: 0xf8fafc });
 const lightStrip = new THREE.Mesh(lightStripGeo, lightStripMat);
 lightStrip.rotation.x = Math.PI / 2;
-lightStrip.position.set(0, 4.14, 0);
+lightStrip.position.set(0, 4.24, tableZ);
 scene.add(lightStrip);
 
 // 5. Executive Figurines Creation (GLTF Loader with Procedural Fallback)
@@ -320,30 +305,30 @@ function createProceduralExecutiveAvatar(data: ExecutiveMember): THREE.Group {
   head.castShadow = !isSoftwareGl;
   group.add(head);
 
-  // Part 5: Interactive Holographic Agenda Tablet
-  const tabletGeo = new THREE.BoxGeometry(0.55, 0.02, 0.4);
+  // Part 5: Interactive Holographic Agenda Tablet Console
+  const tabletGeo = new THREE.BoxGeometry(0.52, 0.02, 0.36);
   const tabletMat = new THREE.MeshStandardMaterial({
-    color: 0x0284c7,
+    color: 0x0f172a,
     roughness: 0.2,
     metalness: 0.8,
     emissive: accentColorNum,
-    emissiveIntensity: 0.4,
+    emissiveIntensity: 0.35,
   });
   const tablet = new THREE.Mesh(tabletGeo, tabletMat);
-  tablet.position.set(0, 1.07, 0.72);
+  tablet.position.set(0, 0.88, 0.42);
   group.add(tablet);
 
-  // Part 6: Glow Ring on the Table
-  const ringGeo = new THREE.RingGeometry(0.42, 0.48, 32);
+  // Part 6: Glowing station ring
+  const ringGeo = new THREE.RingGeometry(0.36, 0.42, 32);
   const ringMat = new THREE.MeshBasicMaterial({
     color: accentColorNum,
     side: THREE.DoubleSide,
     transparent: true,
-    opacity: 0.5,
+    opacity: 0.45,
   });
   const ring = new THREE.Mesh(ringGeo, ringMat);
   ring.rotation.x = -Math.PI / 2;
-  ring.position.set(0, 1.065, 0.72);
+  ring.position.set(0, 0.875, 0.42);
   group.add(ring);
 
   // Invisible proxy cylinder for raycasting
@@ -416,7 +401,7 @@ const hoverTooltip = document.getElementById('hover-tooltip')!;
 const tipRole = document.getElementById('tip-role')!;
 const loadingOverlay = document.getElementById('loading-overlay');
 
-let activeMember: ExecutiveMember = EXECUTIVE_MEMBERS[7]; // Default to figurine 8 (CTO)
+let activeMember: ExecutiveMember = EXECUTIVE_MEMBERS[0]; // Default to #01 (CTO)
 
 function renderPills() {
   pillsRow.innerHTML = '';
@@ -437,7 +422,7 @@ function renderPills() {
 function updateActiveUI(member: ExecutiveMember) {
   activeMember = member;
   execTitle.textContent = member.role;
-  execSubtitle.textContent = `${member.description} — Click to launch application ↗`;
+  execSubtitle.textContent = `${member.department} (${member.division}) — Click to launch application ↗`;
   execBadge.textContent = member.initials;
   execBadge.style.color = member.accentColor;
   execBadge.style.borderColor = member.accentColor;
@@ -513,7 +498,7 @@ function onPointerMove(event: PointerEvent) {
         group.userData.targetScale = 1.06;
         group.userData.isHovered = true;
 
-        tipRole.textContent = group.userData.member.role;
+        tipRole.textContent = `${group.userData.member.role} — ${group.userData.member.department}`;
         hoverTooltip.style.display = 'block';
         container!.style.cursor = 'pointer';
       }
@@ -559,8 +544,8 @@ function selectExecutive(member: ExecutiveMember, zoomCamera = true, launchTab =
   updateActiveUI(member);
 
   if (zoomCamera) {
-    targetControlsFocus.set(member.xPosition, 1.45, -0.6);
-    targetCameraPos.set(member.xPosition * 0.7, 2.3, 4.2);
+    targetControlsFocus.set(member.xPosition, member.isStanding ? 1.45 : 1.15, -0.4);
+    targetCameraPos.set(member.xPosition * 0.75, 2.2, 4.6);
     isTransitioningCamera = true;
   }
 

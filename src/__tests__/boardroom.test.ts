@@ -6,27 +6,27 @@ describe('Executive Steering Committee Portal Data & Layout', () => {
     expect(EXECUTIVE_MEMBERS).toHaveLength(8);
   });
 
-  it('correctly maps the 8 required executive roles and target URLs', () => {
+  it('correctly maps the 8 required executive positions and target URLs starting with CTO and CFO', () => {
     const expectedRoles = [
-      'Brand Studio',
-      'A/B Testing Suite',
-      'CXO Planning Portal',
-      'Price Pulse',
-      'Meridian CEO Suite',
-      'CFO Capital Allocation',
-      'Carbon Management',
-      'CTO Digital Transformation',
+      'CTO',
+      'CFO',
+      'CEO',
+      'CMO',
+      'CPO',
+      'CSO',
+      'CCO',
+      'CSO-ESG',
     ];
 
     const expectedUrls = [
+      'https://nirmalya-iitkgp.github.io/CTO-Digital-Transformation/',
+      'https://nirmalya-iitkgp.github.io/CFO-Capital-allocation/',
+      'https://nirmalya-iitkgp.github.io/Meridian-CEO-Decision-Suite/',
       'https://nirmalya-iitkgp.github.io/Brand-Studio/',
       'https://nirmalya-iitkgp.github.io/A-B-testing-suite/',
       'https://nirmalya-iitkgp.github.io/CXO-Planning-Portal/',
       'https://nirmalya-iitkgp.github.io/Price-Pulse/',
-      'https://nirmalya-iitkgp.github.io/Meridian-CEO-Decision-Suite/',
-      'https://nirmalya-iitkgp.github.io/CFO-Capital-allocation/',
       'https://nirmalya-iitkgp.github.io/Carbon-Management/',
-      'https://nirmalya-iitkgp.github.io/CTO-Digital-Transformation/',
     ];
 
     EXECUTIVE_MEMBERS.forEach((exec, idx) => {

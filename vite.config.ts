@@ -1,5 +1,6 @@
 import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
+import fs from 'node:fs';
 import path from 'path';
 import { defineConfig, type Plugin } from 'vite';
 
@@ -19,61 +20,83 @@ const executiveModelPlugin: Plugin = {
       return;
     }
 
+    const buildsDir = path.resolve(import.meta.dirname, 'builds');
+    const existingFiles = new Set(fs.existsSync(buildsDir) ? fs.readdirSync(buildsDir) : []);
+
+    // Only assign URLs for models that actually exist on disk in builds/
+    const potentialModels: Record<number, string> = {
+      1: 'urban_gentleman.glb',
+      2: 'ivory_steele__corporate_precision.glb',
+      3: 'blue_blazer_executive.glb',
+      4: 'professional_portrait_in_business_casual.glb',
+      5: 'blue_blazer_executive.glb',
+      6: 'ivory_steele__corporate_precision.glb',
+      7: 'urban_gentleman.glb',
+      8: 'professional_portrait_in_business_casual.glb',
+    };
+
+    const modelEntries: string[] = [];
+    for (const [memberId, filename] of Object.entries(potentialModels)) {
+      if (existingFiles.has(filename)) {
+        modelEntries.push(`${memberId}: new URL('../builds/${filename}', import.meta.url).href`);
+      }
+    }
+
     const replacement = `// Load the GLB assets from builds/ and use procedural avatars if a model fails.
 const dracoLoader = new DRACOLoader();
 dracoLoader.setDecoderPath('https://www.gstatic.com/draco/v1/decoders/');
 gltfLoader.setDRACOLoader(dracoLoader);
-console.info('Draco decoder configured for executive GLB models');
 
 const MODEL_URLS: Record<number, string> = {
-  1: new URL('../builds/blue_blazer_executive.glb', import.meta.url).href,
-  2: new URL('../builds/confident_presenter.glb', import.meta.url).href,
-  3: new URL('../builds/confident_professional_in_a_grey_blazer.glb', import.meta.url).href,
-  4: new URL('../builds/confident_professional_on_the_move.glb', import.meta.url).href,
-  5: new URL('../builds/executive_in_a_gray_suit.glb', import.meta.url).href,
-  6: new URL('../builds/ivory_steele__corporate_precision.glb', import.meta.url).href,
-  7: new URL('../builds/professional_portrait_in_business_casual.glb', import.meta.url).href,
-  8: new URL('../builds/urban_gentleman.glb', import.meta.url).href,
+  ${modelEntries.join(',\n  ')}
 };
 
 EXECUTIVE_MEMBERS.forEach((exec) => {
-  gltfLoader.load(
-    MODEL_URLS[exec.id],
-    (gltf) => {
-      const model = gltf.scene;
-      const initialBounds = new THREE.Box3().setFromObject(model);
-      const modelHeight = initialBounds.getSize(new THREE.Vector3()).y;
+  const modelUrl = MODEL_URLS[exec.id];
+  if (modelUrl) {
+    gltfLoader.load(
+      modelUrl,
+      (gltf) => {
+        const model = gltf.scene;
+        const initialBounds = new THREE.Box3().setFromObject(model);
+        const modelHeight = initialBounds.getSize(new THREE.Vector3()).y;
 
-      // Normalize model height, then place its lowest point on the floor.
-      if (modelHeight > 0) model.scale.setScalar(1.8 / modelHeight);
-      model.updateMatrixWorld(true);
-      const bounds = new THREE.Box3().setFromObject(model);
-      const center = bounds.getCenter(new THREE.Vector3());
-      model.position.set(-center.x, -bounds.min.y, 0);
+        // Normalize model height, then place its lowest point on the floor.
+        if (modelHeight > 0) model.scale.setScalar(1.8 / modelHeight);
+        model.updateMatrixWorld(true);
+        const bounds = new THREE.Box3().setFromObject(model);
+        const center = bounds.getCenter(new THREE.Vector3());
+        model.position.set(-center.x, -bounds.min.y, 0);
 
-      model.traverse((child) => {
-        if ((child as THREE.Mesh).isMesh) {
-          child.castShadow = !isSoftwareGl;
-          child.receiveShadow = !isSoftwareGl;
-        }
-      });
+        model.traverse((child) => {
+          if ((child as THREE.Mesh).isMesh) {
+            child.castShadow = !isSoftwareGl;
+            child.receiveShadow = !isSoftwareGl;
+          }
+        });
 
-      const executiveGroup = new THREE.Group();
-      executiveGroup.position.set(exec.xPosition, 0, -0.75);
-      executiveGroup.userData = { member: exec, targetScale: 1.0, hoverScale: 1.0 };
-      executiveGroup.add(model);
-      scene.add(executiveGroup);
-      executiveMeshes.push(executiveGroup);
-      interactiveRaycastTargets.push(executiveGroup);
-    },
-    undefined,
-    (error) => {
-      console.error(\`Could not load GLB model for \${exec.role}\`, error);
-      const avatar = createProceduralExecutiveAvatar(exec);
-      scene.add(avatar);
-      executiveMeshes.push(avatar);
-    }
-  );
+        const executiveGroup = new THREE.Group();
+        executiveGroup.position.set(exec.xPosition, 0, -0.75);
+        executiveGroup.userData = { member: exec, targetScale: 1.0, hoverScale: 1.0 };
+        executiveGroup.add(model);
+        scene.add(executiveGroup);
+        executiveMeshes.push(executiveGroup);
+        interactiveRaycastTargets.push(executiveGroup);
+      },
+      undefined,
+      (error) => {
+        console.warn(\`Could not load GLB model for \${exec.role}, falling back to avatar:\`, error);
+        const avatar = createProceduralExecutiveAvatar(exec);
+        scene.add(avatar);
+        executiveMeshes.push(avatar);
+      }
+    );
+  } else {
+    // Clean procedural avatar fallback for positions without GLB files
+    const avatar = createProceduralExecutiveAvatar(exec);
+    scene.add(avatar);
+    executiveMeshes.push(avatar);
+  }
 });
 
 `;
