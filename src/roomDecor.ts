@@ -211,83 +211,6 @@ export function createVideoWallTexture(): THREE.CanvasTexture {
 }
 
 /**
- * Creates luxury architectural indoor plant (fiddle leaf fig in modern fluted ceramic planter).
- */
-export function createPottedPlant(x: number, z: number, scale = 1.0): THREE.Group {
-  const group = new THREE.Group();
-  group.position.set(x, 0, z);
-  group.scale.setScalar(scale);
-
-  // Modern fluted ceramic planter
-  const potGeo = new THREE.CylinderGeometry(0.38, 0.28, 0.95, 24);
-  const potMat = new THREE.MeshStandardMaterial({
-    color: 0x18181b,
-    roughness: 0.35,
-    metalness: 0.2,
-  });
-  const pot = new THREE.Mesh(potGeo, potMat);
-  pot.position.y = 0.475;
-  pot.castShadow = true;
-  group.add(pot);
-
-  // Brass planter rim accent
-  const rimGeo = new THREE.TorusGeometry(0.38, 0.025, 16, 32);
-  const rimMat = new THREE.MeshStandardMaterial({
-    color: 0xd4af37,
-    roughness: 0.25,
-    metalness: 0.85,
-  });
-  const rim = new THREE.Mesh(rimGeo, rimMat);
-  rim.rotation.x = Math.PI / 2;
-  rim.position.y = 0.95;
-  group.add(rim);
-
-  // Soil
-  const soilGeo = new THREE.CylinderGeometry(0.36, 0.36, 0.05, 20);
-  const soilMat = new THREE.MeshStandardMaterial({ color: 0x1c1917, roughness: 0.9 });
-  const soil = new THREE.Mesh(soilGeo, soilMat);
-  soil.position.y = 0.93;
-  group.add(soil);
-
-  // Organic stems & lush broad leaves
-  const leafMat = new THREE.MeshStandardMaterial({
-    color: 0x15803d,
-    roughness: 0.4,
-    metalness: 0.1,
-    side: THREE.DoubleSide,
-  });
-
-  const stemMat = new THREE.MeshStandardMaterial({
-    color: 0x166534,
-    roughness: 0.5,
-  });
-
-  for (let i = 0; i < 7; i++) {
-    const angle = (i / 7) * Math.PI * 2 + (i % 2) * 0.3;
-    const height = 1.2 + (i % 3) * 0.28;
-
-    const stemGeo = new THREE.CylinderGeometry(0.02, 0.03, height, 8);
-    const stem = new THREE.Mesh(stemGeo, stemMat);
-    stem.position.set(Math.cos(angle) * 0.12, 0.95 + height / 2, Math.sin(angle) * 0.12);
-    stem.rotation.z = Math.sin(angle) * 0.22;
-    stem.rotation.x = Math.cos(angle) * 0.22;
-    group.add(stem);
-
-    // Sculpted leaf plane
-    const leafGeo = new THREE.SphereGeometry(0.32, 8, 8);
-    leafGeo.scale(0.8, 1.4, 0.12);
-    const leaf = new THREE.Mesh(leafGeo, leafMat);
-    leaf.position.set(Math.cos(angle) * 0.32, 0.95 + height, Math.sin(angle) * 0.32);
-    leaf.rotation.y = angle;
-    leaf.rotation.x = 0.45;
-    leaf.castShadow = true;
-    group.add(leaf);
-  }
-
-  return group;
-}
-
-/**
  * Creates executive side credenzas with luxury bronze sculpture and ambient lamp.
  */
 export function createSideCredenza(x: number, z: number, rotationY = 0): THREE.Group {
@@ -501,13 +424,7 @@ export function buildEnhancedRoom(
   roomGroup.add(createSideCredenza(-11.5, -1.5, Math.PI / 2));
   roomGroup.add(createSideCredenza(11.5, -1.5, -Math.PI / 2));
 
-  // 8. Luxury Architectural Potted Plants
-  roomGroup.add(createPottedPlant(-6.8, -4.8, 1.1));
-  roomGroup.add(createPottedPlant(6.8, -4.8, 1.1));
-  roomGroup.add(createPottedPlant(-12.8, 4.5, 1.0));
-  roomGroup.add(createPottedPlant(12.8, 4.5, 1.0));
-
-  // 9. Tabletop Appointments at 8 Executive Stations
+  // 8. Tabletop Appointments at 8 Executive Stations
   const xPositions = [-5.25, -3.75, -2.25, -0.75, 0.75, 2.25, 3.75, 5.25];
   const blotterGeo = new THREE.BoxGeometry(0.85, 0.012, 0.52);
   const blotterMat = new THREE.MeshStandardMaterial({ color: 0x18181b, roughness: 0.65, metalness: 0.1 });

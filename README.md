@@ -41,7 +41,6 @@ The portal features 8 executive nodes arranged across an executive boardroom tab
   - Fluted acoustic vertical timber slat wings with warm cove LED uplighting.
   - Architectural side glass curtain walls with dark steel mullions overlooking the night skyline.
   - Floating side credenzas with modern abstract bronze sculptures and warm table lamps.
-  - Potted architectural plants (broadleaf ficus / fiddle-leaf fig) in luxury fluted ceramic planters with brass rims.
   - Individual executive leather desk blotters, crystal water tumblers, and conference telepresence mic discs at all 8 stations.
 
 ### 3. GLTFLoader & Procedural Fallback Avatars
