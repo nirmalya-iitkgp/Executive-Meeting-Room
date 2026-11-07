@@ -14,6 +14,10 @@ const executiveModelPlugin: Plugin = {
     if (start === -1 || end === -1) return;
 
     const replacement = `// Load the GLB assets from builds/ and use procedural avatars if a model fails.
+const dracoLoader = new DRACOLoader();
+dracoLoader.setDecoderPath('https://www.gstatic.com/draco/v1/decoders/');
+gltfLoader.setDRACOLoader(dracoLoader);
+
 const MODEL_URLS: Record<number, string> = {
   1: new URL('../builds/blue_blazer_executive.glb', import.meta.url).href,
   2: new URL('../builds/confident_presenter.glb', import.meta.url).href,
@@ -67,7 +71,8 @@ EXECUTIVE_MEMBERS.forEach((exec) => {
 
 `;
 
-    return code.slice(0, start) + replacement + code.slice(end);
+    const transformed = code.slice(0, start) + replacement + code.slice(end);
+    return `import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js';\n${transformed}`;
   },
 };
 
