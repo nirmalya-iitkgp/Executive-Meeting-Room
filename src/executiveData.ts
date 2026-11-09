@@ -51,9 +51,9 @@ export const EXECUTIVE_MEMBERS: ExecutiveMember[] = [
   },
   {
     id: 3,
-    role: "CEO",
-    department: "Chief Executive Officer",
-    division: "Meridian Executive Leadership & Command",
+    role: "CoS",
+    department: "Chief of Staff",
+    division: "Leads execution for MDs Office",
     url: "https://nirmalya-iitkgp.github.io/Meridian-CEO-Decision-Suite/",
     isStanding: false,
     xPosition: -2.25,
@@ -61,7 +61,7 @@ export const EXECUTIVE_MEMBERS: ExecutiveMember[] = [
     chairNeeded: true,
     accentColor: "#eab308",
     description: "Executive command matrix, holistic enterprise performance & shareholder value.",
-    initials: "CEO",
+    initials: "CoS",
     metrics: "$4.2B Consolidated Enterprise ARR"
   },
   {
