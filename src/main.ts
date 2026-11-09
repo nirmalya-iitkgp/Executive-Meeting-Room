@@ -392,7 +392,6 @@ const pillsRow = document.getElementById('pills-row')!;
 const execTitle = document.getElementById('exec-title')!;
 const execSubtitle = document.getElementById('exec-subtitle')!;
 const execBadge = document.getElementById('exec-badge')!;
-const execStatusChip = document.getElementById('exec-status-chip')!;
 const launchBtn = document.getElementById('launch-btn')!;
 const dockContainer = document.getElementById('dock-container')!;
 const dockToggleBtn = document.getElementById('dock-toggle-btn')!;
@@ -426,14 +425,6 @@ function updateActiveUI(member: ExecutiveMember) {
   execBadge.textContent = member.initials;
   execBadge.style.color = member.accentColor;
   execBadge.style.borderColor = member.accentColor;
-
-  if (member.isStanding) {
-    execStatusChip.textContent = '';
-    execStatusChip.className = 'exec-status-chip standing';
-  } else {
-    execStatusChip.textContent = '';
-    execStatusChip.className = 'exec-status-chip';
-  }
 
   renderPills();
 }
