@@ -448,7 +448,7 @@
       { id: 2, role: "A/B Testing Suite", department: "Growth", url: "https://nirmalya-iitkgp.github.io/A-B-testing-suite/", isStanding: false, xPos: -3.75, accentColor: 0x8b5cf6, accentHex: "#8b5cf6", initials: "AB", subtitle: "Hypothesis evaluation & optimization" },
       { id: 3, role: "CXO Planning Portal", department: "CSO", url: "https://nirmalya-iitkgp.github.io/CXO-Planning-Portal/", isStanding: false, xPos: -2.25, accentColor: 0x3b82f6, accentHex: "#3b82f6", initials: "CX", subtitle: "Strategic roadmap & board governance" },
       { id: 4, role: "Price Pulse", department: "CCO", url: "https://nirmalya-iitkgp.github.io/Price-Pulse/", isStanding: false, xPos: -0.75, accentColor: 0x06b6d4, accentHex: "#06b6d4", initials: "PP", subtitle: "Dynamic pricing telemetry" },
-      { id: 5, role: "Chief of Staff Suite", department: "CoS", url: "https://nirmalya-iitkgp.github.io/Meridian-CEO-Decision-Suite/", isStanding: true, xPos: 0.75, accentColor: 0xeab308, accentHex: "#eab308", initials: "MS", subtitle: "Executive leadership & performance" },
+      { id: 5, role: "Transformation Suite", department: "CoS", url: "https://nirmalya-iitkgp.github.io/Meridian-CEO-Decision-Suite/", isStanding: true, xPos: 0.75, accentColor: 0xeab308, accentHex: "#eab308", initials: "MS", subtitle: "Executive leadership & performance" },
       { id: 6, role: "CFO Capital Allocation", department: "CFO", url: "https://nirmalya-iitkgp.github.io/CFO-Capital-allocation/", isStanding: true, xPos: 2.25, accentColor: 0x10b981, accentHex: "#10b981", initials: "CF", subtitle: "Treasury optimization & hurdle rates" },
       { id: 7, role: "Carbon Management", department: "CSO", url: "https://nirmalya-iitkgp.github.io/Carbon-Management/", isStanding: true, xPos: 3.75, accentColor: 0x14b8a6, accentHex: "#14b8a6", initials: "CM", subtitle: "ESG governance & decarbonization" },
       { id: 8, role: "CTO Digital Transformation", department: "CTO", url: "https://nirmalya-iitkgp.github.io/CTO-Digital-Transformation/", isStanding: true, xPos: 5.25, accentColor: 0x6366f1, accentHex: "#6366f1", initials: "DT", subtitle: "Cloud modernization & enterprise AI" }
@@ -634,7 +634,7 @@
       execBadge.textContent = m.initials;
       execBadge.style.color = m.accentHex;
       execBadge.style.borderColor = m.accentHex;
-      execStatusChip.textContent = m.isStanding ? "Standing Presentation" : "Seated Executive";
+      execStatusChip.textContent = m.isStanding ? " " : " ";
       execStatusChip.className = `exec-status-chip ${m.isStanding ? 'standing' : ''}`;
       renderPills();
     }
