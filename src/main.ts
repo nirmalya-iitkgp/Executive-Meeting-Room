@@ -428,10 +428,10 @@ function updateActiveUI(member: ExecutiveMember) {
   execBadge.style.borderColor = member.accentColor;
 
   if (member.isStanding) {
-    execStatusChip.textContent = 'Standing Presentation';
+    execStatusChip.textContent = '';
     execStatusChip.className = 'exec-status-chip standing';
   } else {
-    execStatusChip.textContent = 'Seated Executive';
+    execStatusChip.textContent = '';
     execStatusChip.className = 'exec-status-chip';
   }
 
