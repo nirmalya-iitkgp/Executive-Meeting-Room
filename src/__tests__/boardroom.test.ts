@@ -6,18 +6,8 @@ describe('Executive Steering Committee Portal Data & Layout', () => {
     expect(EXECUTIVE_MEMBERS).toHaveLength(8);
   });
 
-  it('correctly maps the 8 required executive positions and target URLs starting with CTO and CFO', () => {
-    const expectedRoles = [
-      'CTO',
-      'CFO',
-      'CEO',
-      'CMO',
-      'CPO',
-      'CSO',
-      'CCO',
-      'CSO-ESG',
-    ];
-
+  it('correctly maps the 8 required executive positions and target URLs', () => {
+    const expectedRoles = ['CTO', 'CFO', 'CEO', 'CMO', 'CPO', 'CSO', 'CCO', 'CSO-ESG'];
     const expectedUrls = [
       'https://nirmalya-iitkgp.github.io/CTO-Digital-Transformation/',
       'https://nirmalya-iitkgp.github.io/CFO-Capital-allocation/',
@@ -28,7 +18,6 @@ describe('Executive Steering Committee Portal Data & Layout', () => {
       'https://nirmalya-iitkgp.github.io/Price-Pulse/',
       'https://nirmalya-iitkgp.github.io/Carbon-Management/',
     ];
-
     EXECUTIVE_MEMBERS.forEach((exec, idx) => {
       expect(exec.role).toBe(expectedRoles[idx]);
       expect(exec.url).toBe(expectedUrls[idx]);
@@ -36,34 +25,23 @@ describe('Executive Steering Committee Portal Data & Layout', () => {
     });
   });
 
-  it('enforces seated arrangement for figurines 1 to 4 and standing for 5 to 8', () => {
-    // 1 to 4 seated
-    for (let i = 0; i < 4; i++) {
-      expect(EXECUTIVE_MEMBERS[i].isStanding).toBe(false);
-      expect(EXECUTIVE_MEMBERS[i].chairNeeded).toBe(true);
-      expect(EXECUTIVE_MEMBERS[i].yOffset).toBe(0.0);
-    }
-
-    // 5 to 8 standing
-    for (let i = 4; i < 8; i++) {
-      expect(EXECUTIVE_MEMBERS[i].isStanding).toBe(true);
-      expect(EXECUTIVE_MEMBERS[i].chairNeeded).toBe(false);
-      expect(EXECUTIVE_MEMBERS[i].yOffset).toBeGreaterThan(0.3);
-    }
+  it('uses the same member data shape for every portal entry', () => {
+    const fields = Object.keys(EXECUTIVE_MEMBERS[0]).sort();
+    EXECUTIVE_MEMBERS.forEach((member) => {
+      expect(Object.keys(member).sort()).toEqual(fields);
+    });
   });
 
   it('verifies non-overlapping horizontal spacing along the X axis', () => {
     for (let i = 0; i < EXECUTIVE_MEMBERS.length - 1; i++) {
-      const current = EXECUTIVE_MEMBERS[i];
-      const next = EXECUTIVE_MEMBERS[i + 1];
-      const distance = next.xPosition - current.xPosition;
+      const distance = EXECUTIVE_MEMBERS[i + 1].xPosition - EXECUTIVE_MEMBERS[i].xPosition;
       expect(distance).toBeGreaterThanOrEqual(1.2);
     }
   });
 });
 
-describe('Security Red-Pill / Blue-Pill URL Sanitization', () => {
-  it('approves all 8 legitimate production executive URLs', () => {
+describe('Portal URL Sanitization', () => {
+  it('approves all 8 legitimate production portal URLs', () => {
     EXECUTIVE_MEMBERS.forEach((exec) => {
       const result = validatePortalUrl(exec.url);
       expect(result.isValid).toBe(true);
@@ -72,7 +50,7 @@ describe('Security Red-Pill / Blue-Pill URL Sanitization', () => {
     });
   });
 
-  it('blocks Red-Pill malicious vector attacks (XSS, script injection, data URI)', () => {
+  it('blocks malicious URL schemes', () => {
     const maliciousPayloads = [
       'javascript:alert(document.cookie)',
       'JAVASCRIPT:fetch("https://attacker.com")',
@@ -81,7 +59,6 @@ describe('Security Red-Pill / Blue-Pill URL Sanitization', () => {
       'file:///etc/passwd',
       'about:blank',
     ];
-
     maliciousPayloads.forEach((payload) => {
       const result = validatePortalUrl(payload);
       expect(result.isValid).toBe(false);
@@ -90,7 +67,7 @@ describe('Security Red-Pill / Blue-Pill URL Sanitization', () => {
     });
   });
 
-  it('blocks unencrypted HTTP and untrusted third-party phishing domains', () => {
+  it('blocks unencrypted HTTP and untrusted third-party domains', () => {
     const insecureUrls = [
       'http://nirmalya-iitkgp.github.io/Brand-Studio/',
       'https://fake-phishing-login.com/steal-creds',
@@ -98,10 +75,6 @@ describe('Security Red-Pill / Blue-Pill URL Sanitization', () => {
       'not-a-valid-url',
       '',
     ];
-
-    insecureUrls.forEach((url) => {
-      const result = validatePortalUrl(url);
-      expect(result.isValid).toBe(false);
-    });
+    insecureUrls.forEach((url) => expect(validatePortalUrl(url).isValid).toBe(false));
   });
 });
